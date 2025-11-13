@@ -1,35 +1,22 @@
 %{
-#include<stdio.h>
-#include<ctype.h>
+#include <stdio.h>
+
+int lines = 0, words = 0;
 %}
-%token DIGIT
+
 %%
-line:expr'\n' {printf("%d",$1);exit(0);}
-;
-expr:expr '+' term {$$=$1+$3;}
-|term
-;
-term:term '*' factor {$$=$1*$3;}
-|factor
-;
-factor:'('expr')' {$$=$2;}
-|DIGIT
-;
+\n              { lines++; }
+[ \t]+          { /* Ignore spaces and tabs */ }
+[^ \t\n]+       { words++; }
 %%
-yylex()
-{
-int c;
-c=getchar();
-if(isdigit(c))
-{
-yylval=c-'0';
-return DIGIT;
+
+int main() {
+    yylex();
+    printf("Number of lines: %d\n", lines);
+    printf("Number of words: %d\n", words);
+    return 0;
 }
-return c;
-}
-void main(){
-yyparse();
-}
-void yyerror(char *s){
-printf("%s",s);
+
+int yywrap() {
+    return 1;
 }
